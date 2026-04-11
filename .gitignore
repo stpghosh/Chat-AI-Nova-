@@ -1,0 +1,10 @@
+# Ignore all environment variable files
+# This includes .env, .env.local, .env.production, .env.development, etc.
+.env
+.env.*
+
+# Ignore all node_modules directories
+# This includes the root node_modules and any node_modules in subdirectories (e.g., client/node_modules)
+node_modules/
+*/node_modules/
+**/node_modules/
