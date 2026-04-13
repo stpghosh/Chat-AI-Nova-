@@ -1,13 +1,23 @@
-import React, { useState } from 'react'
+import React, { useState, Suspense, lazy } from 'react'
 import { BrowserRouter, Routes, Route, Navigate, Link, useLocation } from 'react-router-dom'
 import { FiMenu, FiX, FiZap, FiMessageSquare, FiImage, FiUsers, FiHome, FiCreditCard } from 'react-icons/fi'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 
-import Landing from './pages/Landing'
-import Subscribe from './pages/Subscribe'
-import Chat from './pages/Chat'
-import Community from './pages/Community'
-import ImageGenerator from './pages/ImageGenerator'
+const Landing = lazy(() => import('./pages/Landing'))
+const Subscribe = lazy(() => import('./pages/Subscribe'))
+const Chat = lazy(() => import('./pages/Chat'))
+const Community = lazy(() => import('./pages/Community'))
+const ImageGenerator = lazy(() => import('./pages/ImageGenerator'))
+
+const PageLoader = () => (
+  <div className="min-h-screen flex items-center justify-center bg-slate-950">
+    <motion.div
+      animate={{ rotate: 360 }}
+      transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+      className="w-10 h-10 border-2 border-violet-500 border-t-transparent rounded-full"
+    />
+  </div>
+)
 
 const MobileNav = ({ isOpen, onClose }) => {
   const navItems = [
@@ -110,8 +120,8 @@ function AnimatedRoutes() {
   const location = useLocation()
   const shouldReduceMotion = useReducedMotion()
 
-  if (shouldReduceMotion) {
-    return (
+  const pageContent = (
+    <Suspense fallback={<PageLoader />}>
       <Routes location={location}>
         <Route path="/" element={<Landing />} />
         <Route path="/subscribe" element={<Subscribe />} />
@@ -120,7 +130,11 @@ function AnimatedRoutes() {
         <Route path="/image" element={<ImageGenerator />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    )
+    </Suspense>
+  )
+
+  if (shouldReduceMotion) {
+    return pageContent
   }
 
   return (
@@ -132,14 +146,7 @@ function AnimatedRoutes() {
         exit={{ opacity: 0, y: -8, scale: 0.98 }}
         transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
       >
-        <Routes location={location}>
-          <Route path="/" element={<Landing />} />
-          <Route path="/subscribe" element={<Subscribe />} />
-          <Route path="/chat" element={<Chat />} />
-          <Route path="/community" element={<Community />} />
-          <Route path="/image" element={<ImageGenerator />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+        {pageContent}
       </motion.div>
     </AnimatePresence>
   )
