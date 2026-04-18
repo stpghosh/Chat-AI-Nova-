@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-const API_KEY = process.env.GROQ_API_KEY || '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';
+const API_KEY = process.env.GROQ_API_KEY;
 
 const getChatResponse = async (req, res) => {
   const { message } = req.body;
