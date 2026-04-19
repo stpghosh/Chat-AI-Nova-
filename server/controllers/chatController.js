@@ -9,6 +9,12 @@ const getChatResponse = async (req, res) => {
     return res.status(400).json({ error: 'Message is required' });
   }
 
+  console.log('GROQ_API_KEY exists:', !!API_KEY, API_KEY ? API_KEY.substring(0, 10) + '...' : '');
+  
+  if (!API_KEY) {
+    return res.status(500).json({ reply: 'Server configuration error: API key missing' });
+  }
+
   try {
     const response = await axios.post(
       'https://api.groq.com/openai/v1/chat/completions',
@@ -31,7 +37,8 @@ const getChatResponse = async (req, res) => {
         headers: {
           'Authorization': `Bearer ${API_KEY}`,
           'Content-Type': 'application/json'
-        }
+        },
+        timeout: 25000
       }
     );
 

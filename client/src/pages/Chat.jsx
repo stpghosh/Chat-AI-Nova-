@@ -165,12 +165,15 @@ const Chat = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: inputText })
       })
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
       const data = await response.json()
       setTimeout(() => {
         setMessages(prev => [...prev, { id: Date.now() + 1, text: data?.reply || 'Sorry, I could not generate a response.', sender: 'ai' }])
         setIsTyping(false)
       }, 800)
-    } catch {
+    } catch (err) {
       setIsTyping(false)
       setMessages(prev => [...prev, { id: Date.now() + 1, text: 'Error. Try again.', sender: 'ai' }])
     }
